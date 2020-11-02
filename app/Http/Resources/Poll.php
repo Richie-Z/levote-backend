@@ -36,7 +36,11 @@ class Poll extends JsonResource
             $array['result'] = "this poll is still ongoing";
         }
         if (auth()->user()->role == "user") {
-            return null;
+            if ($this->deadline <= Carbon::now()) {
+                return $array;
+            } else {
+                return null;
+            }
         } else {
             return $array;
         }

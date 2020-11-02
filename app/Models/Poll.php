@@ -14,7 +14,7 @@ class Poll extends Model
 
     public function votes()
     {
-        return $this->belongsToMany('App\Models\User', 'App\Model\Choice', 'votes');
+        return $this->belongsToMany('App\Models\User', 'App\Model\Choice', 'App\Model\Division', 'votes');
     }
     public function choice()
     {

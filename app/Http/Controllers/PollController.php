@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Poll;
 use App\Models\Choice;
 use Carbon\Carbon;
+use App\Models\Vote;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Poll as PollResources;
@@ -59,7 +60,32 @@ class PollController extends Controller
     }
     public function vote($poll_id, $choice_id)
     {
-        return "test user";
+        $poll = Poll::find($poll_id);
+        $choice = Choice::find($choice_id);
+        $user = Auth::user();
+        $voted = Vote::where('user_id', $user->id)->where('poll_id', $poll_id)->count();
+        if ($poll->deadline <= Carbon::now()) {
+            return response()->json(['message' => 'voting deadline'], 422);
+        }
+        if (!$voted == 0) {
+            return response()->json(['message' => 'already voted'], 422);
+        }
+        if ($choice == null) {
+            return response()->json(['message' => 'invalid choice'], 422);
+        }
+        if ($poll == null) {
+            return response()->json(['message' => 'invalid poll'], 422);
+        }
+        if ($poll->id != $choice->poll_id) {
+            return response()->json(['message' => 'choice not match'], 422);
+        }
+        $vote = new Vote;
+        $vote->choice_id = $choice->id;
+        $vote->user_id = $user->id;
+        $vote->poll_id = $poll->id;
+        $vote->division_id = $user->division_id;
+        $vote->save();
+        return response()->json(['message' => 'voting success'], 200);
     }
     public function delete($poll_id)
     {

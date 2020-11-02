@@ -24,7 +24,7 @@ class AuthController extends Controller
             $token = $user->createToken('token')->accessToken;
             return response()->json([
                 'access_token' => $token,
-                'token_type' => 'Bearer',
+                'token_type' => 'bearer',
                 'expires_in' =>  now()->addDays(env('PERSONAL_ACCESS_TOKEN_EXPIRY__DAYS'))
             ], 200);
         } else {
