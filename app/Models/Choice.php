@@ -10,4 +10,9 @@ class Choice extends Model
     use HasFactory;
     protected $table = "choices";
     protected $fillable = ['choice', 'poll_id'];
+
+    public function poll()
+    {
+        return $this->belongsTo('App\Models\Poll');
+    }
 }

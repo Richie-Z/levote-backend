@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use PDO;
 
 class User extends Authenticatable
 {
@@ -40,5 +41,9 @@ class User extends Authenticatable
     public function poll()
     {
         return $this->hasMany('App\Models\Poll');
+    }
+    public function division()
+    {
+        return $this->belongsToMany('App\Models\Division');
     }
 }

@@ -30,7 +30,7 @@ Route::group(['prefix' => 'poll'], function () {
         Route::post('/', 'PollController@create')->middleware('role:admin');
         Route::get('/', 'PollController@get');
         Route::get('/{poll_id}', 'PollController@details');
-        Route::post('/{poll_id}/vote/{choice_id}', 'PollController@vote');
+        Route::post('/{poll_id}/vote/{choice_id}', 'PollController@vote')->middleware('role:user');
         Route::delete('/{poll_id}', 'PollController@delete')->middleware('role:admin');
     });
 });
