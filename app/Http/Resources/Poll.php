@@ -7,6 +7,9 @@ use App\Http\Resources\User as UserResource;
 use App\Http\Resources\Choice as ChoiceResource;
 use App\Http\Resources\Result as ResultResource;
 use Carbon\Carbon;
+use App\Models\Poll as Pollmodel;
+use App\Models\Vote;
+use App\Models\Choice as Choicemodel;
 
 class Poll extends JsonResource
 {
@@ -31,12 +34,15 @@ class Poll extends JsonResource
         ];
 
         if ($this->deadline <= Carbon::now()) {
-            $array['result'] = new ResultResource($this->deadline);
+            $poll = Pollmodel::find($this->id);
+            $choices = $poll->choice()->get();
+            $array['result'] = ResultResource::collection($choices);
         } else {
             $array['result'] = "this poll is still ongoing";
         }
+        $poll = Pollmodel::find($this->id);
         if (auth()->user()->role == "user") {
-            if ($this->deadline <= Carbon::now()) {
+            if ($this->deadline <= Carbon::now() || $poll->isVoted() > 0) {
                 return $array;
             } else {
                 return null;

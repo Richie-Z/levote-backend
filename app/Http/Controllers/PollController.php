@@ -63,11 +63,10 @@ class PollController extends Controller
         $poll = Poll::find($poll_id);
         $choice = Choice::find($choice_id);
         $user = Auth::user();
-        $voted = Vote::where('user_id', $user->id)->where('poll_id', $poll_id)->count();
         if ($poll->deadline <= Carbon::now()) {
             return response()->json(['message' => 'voting deadline'], 422);
         }
-        if (!$voted == 0) {
+        if ($poll->isVoted() > 0) {
             return response()->json(['message' => 'already voted'], 422);
         }
         if ($choice == null) {
