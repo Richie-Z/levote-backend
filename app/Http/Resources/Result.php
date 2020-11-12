@@ -22,24 +22,29 @@ class Result extends JsonResource
         $choice = Vote::where('choice_id', $id)->count();
         return $choice;
     }
-    public function DivVote()
+    public function ElectionVote($id)
     {
-        $array = array($this->id);
-        $choice = Vote::where('choice_id', $array)->get();
+        $array = array($id);
+        $choice = Vote::whereIn('choice_id', $array)->groupBy('division_id')->get();
+        $div = $choice->pluck('division_id')->toArray();
+        $count = 0;
         foreach ($choice as $votes) {
         }
         $choices = Vote::where('poll_id', $votes->poll_id)
-            ->where('division_id', $votes->division_id)
-            ->where('choice_id', $this->id)
+            ->whereIn('division_id', $div)
+            ->whereIn('choice_id', $array)
             ->count();
         $point = 1 / $choices;
-
-        return $point;
+        // $ar = implode(" ", array(count($choice)));
+        // return $ar;
+        // return array_map('intval', explode(',', $ar));
+        return $choices;
     }
     public function toArray($request)
     {
-        return [
-            $this->choice => $this->DivVote(),
-        ];
+        // return [
+        //     $this->choice => $this->VoteOnly($this->id),
+        // ];
+        return $this->ElectionVote($this->id);
     }
 }
