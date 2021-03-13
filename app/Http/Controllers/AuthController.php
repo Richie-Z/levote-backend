@@ -10,6 +10,10 @@ use App\Models\Division;
 
 class AuthController extends Controller
 {
+     public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [

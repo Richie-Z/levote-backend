@@ -25,16 +25,18 @@ class Result extends JsonResource
     public function ElectionVote($id)
     {
         $array = array($id);
-        $choice = Vote::whereIn('choice_id', $array)->groupBy('division_id')->get();
-        $div = $choice->pluck('division_id')->toArray();
+        $choice = Vote::whereIn('choice_id', $array)->get();
+        // SELECT COUNT(1) AS total FROM votes WHERE division_id = 1 AND choice_id IN (3,4) GROUP BY choice_id
+        $div = array_unique($choice->pluck('division_id')->toArray());
+        $division = Division::whereIn('id', $div)->get();
         $count = 0;
         foreach ($choice as $votes) {
+            $choices = Vote::where('poll_id', $votes->poll_id)
+                ->whereIn('division_id', $div)
+                ->whereIn('choice_id', $array)
+                ->count();
         }
-        $choices = Vote::where('poll_id', $votes->poll_id)
-            ->whereIn('division_id', $div)
-            ->whereIn('choice_id', $array)
-            ->count();
-        $point = 1 / $choices;
+        // $point = 1 / $choices;
         // $ar = implode(" ", array(count($choice)));
         // return $ar;
         // return array_map('intval', explode(',', $ar));
@@ -42,9 +44,9 @@ class Result extends JsonResource
     }
     public function toArray($request)
     {
-        // return [
-        //     $this->choice => $this->VoteOnly($this->id),
-        // ];
-        return $this->ElectionVote($this->id);
+        return [
+            $this->choice => $this->VoteOnly($this->id),
+        ];
+        // return $this->ElectionVote($this->id);
     }
 }
